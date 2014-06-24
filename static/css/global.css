@@ -1,0 +1,19 @@
+.uploadframe {
+    display: none;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 9999;
+}
+
+.picarr ul li {
+    float: left;
+    padding: 0 0 8px 10px;
+    width: 311px;
+}
+
+ul, li {
+    list-style-type: none;
+}
