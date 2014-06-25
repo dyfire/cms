@@ -32,10 +32,11 @@ func (this *ArticleController) Add() {
 		descs := this.GetStrings("picarr_txt[]")
 
 		m := models.Article{Title: title, Color: color, CategoryId: category_id, Content: content, IsVisible: is_visible, Order: order, Pic: pic, CreateTime: ct}
-		err := m.Insert()
-		if err != nil {
+		id, err := m.Insert()
+		if err == nil {
 			pm := models.Photo{}
-			pm.InsertAll(photos, descs)
+			e := pm.InsertAll(photos, descs, id)
+			beego.Debug(e)
 
 		}
 		this.Redirect("/admin/article/add", 302)

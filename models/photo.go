@@ -1,20 +1,22 @@
 package models
 
 import (
-	// "github.com/astaxie/beego"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	// "github.com/astaxie/beego/validation"
 	// "fmt"
 	// "strconv"
 	// "strings"
+	"errors"
 	"time"
 )
 
 type Photo struct {
-	ID         int64  `orm:"pk"`
+	Id         int64  `orm:"pk"`
 	Title      string `orm:size(200)`
 	Path       string `orm:size(100)`
 	Filename   string `orm:size(50)`
+	PostId     int64
 	CreateTime time.Time
 }
 
@@ -54,6 +56,26 @@ func (m *Photo) Delete() error {
 	return nil
 }
 
-func (m *Photo) InsertAll(path, desc []string) error {
+func (m *Photo) InsertAll(path, desc []string, post_id int) error {
+	if len(path) == 0 {
+		return errors.New("no path")
+	}
+
+	ps := []*Photo{}
+
+	for i := 0; i < len(path); i++ {
+		ps = append(ps, &Photo{Title: desc[i], Path: path[i]})
+	}
+
+	for _, v := range ps {
+		id, _ := orm.NewOrm().Insert(v)
+
+		orm.NewOrm().Update(&Photo{Title: v.Title, Path: v.Path, PostId: int64(post_id), Id: int64(id)})
+		beego.Debug(id)
+	}
+	// if err != nil {
+	// 	return err
+	// }
+
 	return nil
 }

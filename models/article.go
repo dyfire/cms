@@ -26,12 +26,13 @@ func init() {
 	orm.RegisterModelWithPrefix("td_", new(Article))
 }
 
-func (m *Article) Insert() error {
-	if _, err := orm.NewOrm().Insert(m); err != nil {
-		return err
+func (m *Article) Insert() (int, error) {
+	id, err := orm.NewOrm().Insert(m)
+	if err != nil {
+		return 0, err
 	}
 
-	return nil
+	return int(id), nil
 }
 
 func (m *Article) Read(fields ...string) error {
