@@ -64,8 +64,6 @@ func settingLocales() {
 		}
 	}
 
-	Lang = "zh-CN"
-	Langs = i18n.ListLangs()
 }
 
 func init() {

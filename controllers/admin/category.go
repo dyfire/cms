@@ -7,7 +7,7 @@ import (
 )
 
 type CategoryController struct {
-	beego.Controller
+	BaseController
 }
 
 func (this *CategoryController) Add() {

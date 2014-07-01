@@ -14,7 +14,7 @@ import (
 )
 
 type ArticleController struct {
-	beego.Controller
+	BaseController
 }
 
 func (this *ArticleController) Add() {
@@ -35,8 +35,7 @@ func (this *ArticleController) Add() {
 		id, err := m.Insert()
 		if err == nil {
 			pm := models.Photo{}
-			e := pm.InsertAll(photos, descs, id)
-			beego.Debug(e)
+			pm.InsertAll(photos, descs, id)
 
 		}
 		this.Redirect("/admin/article/add", 302)
@@ -65,10 +64,16 @@ func (this *ArticleController) Edit() {
 		ct, _ := time.Parse("2006-01-02 15:04:05", create_time)
 		order, _ := this.GetInt("order")
 		pic, _ := this.GetInt("pic")
+		photos := this.GetStrings("picarr[]")
+		descs := this.GetStrings("picarr_txt[]")
 
 		beego.Debug(ct)
 		m := models.Article{Id: id, Title: title, Color: color, CategoryId: category_id, Content: content, IsVisible: is_visible, Order: order, Pic: pic, CreateTime: ct}
-		m.Update()
+		err := m.Update()
+		if err == nil {
+			pm := models.Photo{}
+			pm.InsertAll(photos, descs, int(id))
+		}
 
 		i := strconv.Itoa(int(id))
 		this.Redirect("/admin/article/edit?id="+i, 302)
@@ -84,6 +89,10 @@ func (this *ArticleController) Edit() {
 		beego.Error(err)
 	}
 
+	p := models.Photo{}
+	photo, err := p.GetLists(int(id), 20, 0)
+
+	this.Data["photo"] = photo
 	this.Data["rs"] = m
 	this.Data["lists"] = lists
 	this.TplNames = "article_edit.html"
@@ -120,7 +129,7 @@ func (this *ArticleController) List() {
 
 	this.Data["lists"] = lists
 	this.Data["paginator"] = p
-	// this.Data["Lang"] = "zh-CN"
+	this.Data["Lang"] = "zh-CN"
 	this.TplNames = "article_list.html"
 	this.Render()
 }

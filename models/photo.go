@@ -1,13 +1,13 @@
 package models
 
 import (
-	"github.com/astaxie/beego"
+	// "github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	// "github.com/astaxie/beego/validation"
 	// "fmt"
 	// "strconv"
-	// "strings"
 	"errors"
+	"strings"
 	"time"
 )
 
@@ -62,20 +62,32 @@ func (m *Photo) InsertAll(path, desc []string, post_id int) error {
 	}
 
 	ps := []*Photo{}
+	create_time := time.Now().Format("2006-01-02 15:04:05")
+	ct, _ := time.Parse("2006-01-02 15:04:05", create_time)
 
 	for i := 0; i < len(path); i++ {
-		ps = append(ps, &Photo{Title: desc[i], Path: path[i]})
+		filename := strings.Split(path[i], "/")
+		f := filename[len(filename)-1]
+		ps = append(ps, &Photo{Title: desc[i], Path: strings.TrimLeft(path[i], "."), Filename: f, CreateTime: ct})
 	}
 
 	for _, v := range ps {
 		id, _ := orm.NewOrm().Insert(v)
 
-		orm.NewOrm().Update(&Photo{Title: v.Title, Path: v.Path, PostId: int64(post_id), Id: int64(id)})
-		beego.Debug(id)
+		orm.NewOrm().Update(&Photo{PostId: int64(post_id), Id: int64(id)})
 	}
-	// if err != nil {
-	// 	return err
-	// }
 
 	return nil
+}
+
+func (m *Photo) GetLists(post_id, num, offset int) ([]*Photo, error) {
+	var p []*Photo
+	o := orm.NewOrm()
+	_, err := o.QueryTable(m).Filter("post_id", post_id).Offset(offset).Limit(num).All(&p)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return p, nil
 }

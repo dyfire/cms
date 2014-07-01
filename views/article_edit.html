@@ -81,6 +81,20 @@
 								</script>
 							</td>
 						</tr>
+						<tr>
+							<th>图片</th>
+							<td>
+								<fieldset class="picarr">
+									<legend>列表</legend>
+									<div>最多可以上传<strong>50</strong>张图片<span onclick="GetUploadify('uploadify2','组图上传','image','image',50,2097152,'picarr','picarr_area')">开始上传</span></div>
+									<ul id="picarr_area">
+										{{range .photo}}
+										<li><img src="{{.Path}}"></li>
+										{{end}}
+									</ul>
+								</fieldset>
+							</td>
+						</tr>
 					</tbody>
 					<tfoot>
 					<tr>
@@ -97,6 +111,7 @@
 		</div>
 
 		{{template "footer"}}
+		<script type="text/javascript" src="/static/js/getuploadify.js"></script>
 		<link href="/static/themes/admin/css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen" type="text/css" />
 		<script src="/static/themes/admin/js/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
 		<script src="/static/themes/admin/js/bootstrap-datetimepicker.zh-CN.js" type="text/javascript"></script>
