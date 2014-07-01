@@ -73,8 +73,8 @@ func (m *Photo) InsertAll(path, desc []string, post_id int) error {
 
 	for _, v := range ps {
 		id, _ := orm.NewOrm().Insert(v)
-
 		orm.NewOrm().Update(&Photo{PostId: int64(post_id), Id: int64(id)})
+
 	}
 
 	return nil
