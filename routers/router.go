@@ -19,5 +19,8 @@ func init() {
 	beego.Router("/admin/article/delete", &admin.ArticleController{}, "*:Delete")
 	beego.Router("/admin/article/upload", &admin.ArticleController{}, "*:Upload")
 
+	beego.Router("/admin/login", &admin.UserController{}, "*:Login")
+	beego.Router("/admin/logout", &admin.UserController{}, "*:Logout")
+
 	fmt.Println(&admin.ArticleController{})
 }

@@ -14,15 +14,16 @@ func (this *BaseController) Prepare() {
 }
 
 func (this *BaseController) initialization() {
-	this.Data["a"] = "ok"
+	this.Data["Lang"] = "zh-CN"
 
 	var FilterUser = func(ctx *context.Context) {
-		beego.Debug(ctx.Input.Session("login"))
-		if ctx.Input.Session("login") == nil {
-			this.Redirect("/admin/login", 302)
+		if ctx.Input.Session("username") == nil {
+			if ctx.Request.RequestURI != "/admin/login" {
+				ctx.Redirect(302, "/admin/login")
+			}
 		}
 	}
 
-	beego.InsertFilter("/*", beego.BeforeRouter, FilterUser)
+	beego.InsertFilter("/admin/*", beego.BeforeRouter, FilterUser)
 
 }
