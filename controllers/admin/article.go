@@ -2,19 +2,17 @@ package admin
 
 import (
 	// "fmt"
-	"bytes"
 	"cms/models"
 	"cms/utils"
-	"fmt"
 	"github.com/astaxie/beego"
-	"io/ioutil"
 	"strconv"
 	"strings"
 	"time"
 )
 
 type ArticleController struct {
-	BaseController
+	// BaseController
+	beego.Controller
 }
 
 func (this *ArticleController) Add() {
@@ -67,7 +65,6 @@ func (this *ArticleController) Edit() {
 		photos := this.GetStrings("picarr[]")
 		descs := this.GetStrings("picarr_txt[]")
 
-		beego.Debug(ct)
 		m := models.Article{Id: id, Title: title, Color: color, CategoryId: category_id, Content: content, IsVisible: is_visible, Order: order, Pic: pic, CreateTime: ct}
 		err := m.Update()
 		if err == nil {
@@ -135,44 +132,30 @@ func (this *ArticleController) List() {
 }
 
 func (this *ArticleController) Upload() {
+
+	sess := this.StartSession()
+
+	this.Data["session_id"] = sess.SessionID()
+	this.Data["num"] = this.GetString("num")
+	this.Data["size"] = this.GetString("size")
+	this.Data["input"] = this.GetString("input")
+	this.Data["area"] = this.GetString("area")
+	this.Data["frame"] = this.GetString("frame")
+	this.Data["title"] = this.GetString("title")
+	this.Data["type"] = this.GetString("type")
+	this.TplNames = "upload.html"
+	this.Render()
+
+}
+
+func (this *ArticleController) Img() {
 	if this.Ctx.Input.IsPost() {
-		_, header, err := this.GetFile("uploadify")
-		if err != nil {
-			beego.Debug("upload failtrue")
-		}
-
-		suffix := strings.ToLower(header.Filename[strings.LastIndex(header.Filename, "."):])
-
-		file_name := time.Now().Format("20060102235959") + suffix
-		save_path := "./static/attachments/" + file_name
-		size := "1000"
-
-		out := fmt.Sprintf("%s,%s,%s,%s", file_name, size, save_path, save_path)
-
-		this.SaveToFile("uploadify", save_path)
-
-		// this.Data["out"] = out
-		// o := []byte{}
-		// for k, v := range out {
-		// 	o[k] = v
-		// }
-		ibytes := bytes.NewBufferString(out)
-		icontent, _ := ioutil.ReadAll(ibytes)
-		this.Ctx.Output.Header("Content-Type", "text/html; charset=utf-8")
-		this.Ctx.Output.Body(icontent)
-
-	} else {
-		sess := this.StartSession()
-
-		this.Data["session_id"] = sess.SessionID()
-		this.Data["num"] = this.GetString("num")
-		this.Data["size"] = this.GetString("size")
-		this.Data["input"] = this.GetString("input")
-		this.Data["area"] = this.GetString("area")
-		this.Data["frame"] = this.GetString("frame")
-		this.Data["title"] = this.GetString("title")
-		this.Data["type"] = this.GetString("type")
-		this.TplNames = "upload.html"
-		this.Render()
+		photos := this.GetStrings("picarr[]")
+		descs := this.GetStrings("picarr_txt[]")
+		pm := models.Photo{}
+		pm.InsertAll(photos, descs, 100)
 	}
+
+	this.TplNames = "img.html"
+	this.Render()
 }
